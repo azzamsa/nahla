@@ -3,7 +3,10 @@ use std::sync::Arc;
 use async_graphql::{Context, Error, FieldResult, Object};
 use uuid::Uuid;
 
-use super::model::{input, User, UserConnection};
+use super::{
+    model::{input, User, UserConnection},
+    service::Pagination,
+};
 use crate::{context::ServerContext, user::scalar::Id};
 
 #[derive(Default)]
@@ -23,11 +26,29 @@ impl UserQuery {
         last: Option<i32>,
     ) -> FieldResult<UserConnection> {
         let server_ctx = ctx.data::<Arc<ServerContext>>()?;
+        let is_total_count = ctx.look_ahead().field("totalCount").exists();
+        let is_has_next_page = ctx
+            .look_ahead()
+            .field("pageInfo")
+            .field("hasNextPage")
+            .exists();
+        let is_has_previous_page = ctx
+            .look_ahead()
+            .field("pageInfo")
+            .field("hasPreviousPage")
+            .exists();
 
-        let result = server_ctx
-            .user_service
-            .find_users(after.clone(), before.clone(), first, last)
-            .await;
+        let pagination_opts = Pagination {
+            after,
+            before,
+            first,
+            last,
+            is_total_count,
+            is_has_next_page,
+            is_has_previous_page,
+        };
+
+        let result = server_ctx.user_service.find_users(pagination_opts).await;
         match result {
             Ok(users) => Ok(users),
             Err(err) => Err(Error::new(err.to_string())),

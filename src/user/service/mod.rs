@@ -26,9 +26,20 @@ impl Service {
 }
 
 #[derive(Debug)]
+pub struct Pagination {
+    pub after: Option<String>,
+    pub before: Option<String>,
+    pub first: Option<i32>,
+    pub last: Option<i32>,
+    pub is_total_count: bool,
+    pub is_has_next_page: bool,
+    pub is_has_previous_page: bool,
+}
+
+#[derive(Debug)]
 pub struct PageInfo {
-    pub has_next_page: bool,
-    pub has_previous_page: bool,
+    pub has_next_page: Option<bool>,
+    pub has_previous_page: Option<bool>,
     pub start_cursor: Option<String>,
     pub end_cursor: Option<String>,
 }

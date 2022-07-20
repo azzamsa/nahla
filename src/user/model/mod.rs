@@ -59,7 +59,7 @@ pub struct UserConnection {
     // Information to aid in pagination.
     pub page_info: PageInfo,
     // Identifies the total count of items in the connection.
-    pub total_count: i64,
+    pub total_count: Option<i64>,
 }
 
 #[derive(Debug, Clone, SimpleObject)]
@@ -67,11 +67,11 @@ pub struct PageInfo {
     // When paginating forwards, the cursor to continue.
     pub end_cursor: Option<String>,
     // When paginating forwards, are there more items?
-    pub has_next_page: bool,
+    pub has_next_page: Option<bool>,
     // When paginating backwards, the cursor to continue.
     pub start_cursor: Option<String>,
     // When paginating backwards, are there more items?
-    pub has_previous_page: bool,
+    pub has_previous_page: Option<bool>,
 }
 
 impl From<service::PageInfo> for PageInfo {
